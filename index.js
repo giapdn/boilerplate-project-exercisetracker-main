@@ -7,9 +7,9 @@ require('dotenv').config()
 
 //Model
 const { User } = require('./models/User.js')
-const { conectToDatabase } = require('./config/mongo.js')
+const { connectToDatabase } = require('./config/mongo.js')
 const Exercise = require('./models/Exercise.js')
-conectToDatabase();
+connectToDatabase();
 
 //Globel middleware
 app.use(cors())
@@ -38,7 +38,7 @@ app
         username: user.username
       })
     } catch (error) {
-      res.json({ error: 'fail' })
+      res.json({ error: error.message })
     }
   })
   .get("/api/users", async (req, res) => {
@@ -85,9 +85,7 @@ app
     }
   })
   // .get('/api/users/:_id/logs', async (req, res) => {
-
   //   const { from, to, limit } = req.query
-
   //   const id = req.params._id
   //   const user = await User.findById(id);
   //   const count = await Exercise.countDocuments({ username: { $eq: user.username } })
@@ -101,7 +99,6 @@ app
   //     username: user.username,
   //     count: Number(count),
   //   }
-
   //   finalRes.log = logs;
   //   res.json(finalRes)
   // })
@@ -116,8 +113,6 @@ app
       }
   
       let query = { username: user.username };
-  
-      // Filter logs by date range if from and/or to are provided
       if (from || to) {
         query.date = {};
         if (from) {
@@ -127,8 +122,7 @@ app
           query.date.$lte = new Date(to);
         }
       }
-  
-      // Fetch logs with optional filtering and limiting
+
       let logsQuery = Exercise.find(query);
   
       if (limit) {
